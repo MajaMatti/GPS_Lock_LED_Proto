@@ -178,7 +178,6 @@ switch (debug) {
     break;
   case 2:
 
-  //eepromSetup();
   
   // This sketch displays information every time a new sentence is correctly encoded.
   while (gpsSerial.available() > 0)
