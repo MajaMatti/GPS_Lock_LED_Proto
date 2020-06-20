@@ -40,8 +40,8 @@ int debug = 2;
 
 //Inbetriebnahme Koordinaten:
 /*
-float Latitude_1 = 52.489784;
-float Longitude_1 = 13.444000;
+float Latitude_1 = XX.XXXXXX;
+float Longitude_1 = XX.XXXXXX;
 
 float Latitude_2  = Latitude_1;
 float Longitude_2 = Longitude_1;
@@ -52,14 +52,14 @@ float Longitude_3 = Longitude_1;
 
 //LOCATION Coordinates:
 
-float Latitude_1  = 52.490830;
-float Longitude_1 = 13.445744;
+float Latitude_1  = XX.XXXXXX;
+float Longitude_1 = XX.XXXXXX;
 
-float Latitude_2  = 52.490093;
-float Longitude_2 = 13.442485;
+float Latitude_2  = XX.XXXXXX;
+float Longitude_2 = XX.XXXXXX;
 
-float Latitude_3  = 52.489395;
-float Longitude_3 = 13.443457;
+float Latitude_3  = XX.XXXXXX;
+float Longitude_3 = XX.XXXXXX;
 
 
 
