@@ -3,11 +3,8 @@
 #include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
 
-
 #define PIN       9 // 
 #define NUMPIXELS 3 // 
-
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 // Choose two Arduino pins to use for software serial
 int RXPin = 2; //TX auf dem Modul
@@ -16,77 +13,64 @@ int TXPin = 3; //RX auf dem Modul
 int GPSBaud = 9600;
 int LockPin = 8;
 
-int counter = 0;
-
-// GPS VARIABLEN
-
-bool gps1 = false;
-bool gps2 = false;
-bool gps3 = false;
-
-// EEPROM ADDRESS
-
+// EEPROM addresses
 int addgps1 = 0;
 int addgps2 = 1;
 int addgps3 = 2;
 
 // EEPROM Var
-
 int eeprom_gps1 = 0;
 int eeprom_gps2 = 0;
 int eeprom_gps3 = 0;
 
+// EEPROM 2 zero Button
+const int buttonPin = 4;
+int buttonState = 0;
 int debug = 2;
 
-//Inbetriebnahme Koordinaten:
-/*
-float Latitude_1 = XX.XXXXXX;
-float Longitude_1 = XX.XXXXXX;
+// gps var
+bool gps1 = false;
+bool gps2 = false;
+bool gps3 = false;
 
+//initial testing coordinates:
+float Latitude_1 = 52.489784;
+float Longitude_1 = 13.444000;
 float Latitude_2  = Latitude_1;
 float Longitude_2 = Longitude_1;
-
 float Latitude_3  = Latitude_1;
 float Longitude_3 = Longitude_1;
+
+//location coordinates:
+/*float Latitude_1  = 52.490830;
+float Longitude_1 = 13.445744;
+float Latitude_2  = 52.490093;
+float Longitude_2 = 13.442485;
+float Latitude_3  = 52.489395;
+float Longitude_3 = 13.443457;
 */
 
-//LOCATION Coordinates:
-
-float Latitude_1  = XX.XXXXXX;
-float Longitude_1 = XX.XXXXXX;
-
-float Latitude_2  = XX.XXXXXX;
-float Longitude_2 = XX.XXXXXX;
-
-float Latitude_3  = XX.XXXXXX;
-float Longitude_3 = XX.XXXXXX;
-
-
-
+// tolerance 
 float tolWindowLat = 0.0003;
 float tolWindowLng = 0.0004;
 
-// LOCATION WINDOW 1:
-
+// location window 1:
 float UntereGrenzeLat_1 = Latitude_1 - tolWindowLat;
 float ObereGrenzeLat_1 = Latitude_1 + tolWindowLat;
 float UntereGrenzeLng_1 = Longitude_1 - tolWindowLng;
 float ObereGrenzeLng_1 = Longitude_1 + tolWindowLng;
 
-// LOCATION WINDOW 2:
-
+// location window 2:
 float UntereGrenzeLat_2 = Latitude_2 - tolWindowLat;
 float ObereGrenzeLat_2 = Latitude_2 + tolWindowLat;
 float UntereGrenzeLng_2 = Longitude_2 - tolWindowLng;
 float ObereGrenzeLng_2 = Longitude_2 + tolWindowLng;
 
-// LOCATION WINDOW 3:
-
+// location window 3:
 float UntereGrenzeLat_3 = Latitude_3 - tolWindowLat;
 float ObereGrenzeLat_3 = Latitude_3 + tolWindowLat;
 float UntereGrenzeLng_3 = Longitude_3 - tolWindowLng;
 float ObereGrenzeLng_3 = Longitude_3 + tolWindowLng;
-
 
 // Create a TinyGPS++ object
 TinyGPSPlus gps;
@@ -94,23 +78,28 @@ TinyGPSPlus gps;
 // Create a software serial port called "gpsSerial"
 SoftwareSerial gpsSerial(RXPin, TXPin);
 
+// Create a Adafruit_NeoPixel object
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 //      __ _/_   _ 
 //    _\/_'/ /_//_/
 //             /  
 
 void setup()
 {
-  // Start the Arduino hardware serial port at 9600 baud
+// Start the Arduino hardware serial port at 9600 baud
   Serial.begin(9600);
+// LockPin to controle the Base of the PNP to switch the Lock (e-magnet)
   pinMode(LockPin, OUTPUT);
-
-  // LEDS - NeoPixel
-
+// initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);
+// LEDS - NeoPixel init
   pixels.begin();
   pixels.show();
-  // Start the software serial port at the GPS's default baud
+// Start the software serial port at the GPS's default baud
   gpsSerial.begin(GPSBaud);
 
+// initial info
 Serial.println("##########################################");
 Serial.println("Coord 1 Latitude low:");
 Serial.println(UntereGrenzeLat_1,6);
@@ -156,7 +145,6 @@ pixels.setPixelColor(2, pixels.Color(0, 0, 0));
 
 
 
-
 }
 
 //     /_  _  _ 
@@ -165,11 +153,24 @@ pixels.setPixelColor(2, pixels.Color(0, 0, 0));
 
 void loop()
 {
+// read button and set state for the EEPROM "cleaner" 
+buttonState = digitalRead(buttonPin);
+if (buttonState == HIGH){
+  debug = 1;
+} else{
+  debug = 2;
+}
+
+Serial.println();
+Serial.println("DEBUG:");
+Serial.println(debug);
+Serial.println();
+
 
 switch (debug) {
   case 1:
   
-// EEPROM eraser
+// EEPROM 2 zero
 
   for (int i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
@@ -177,13 +178,11 @@ switch (debug) {
   
     break;
   case 2:
-
-  
+ 
   // This sketch displays information every time a new sentence is correctly encoded.
   while (gpsSerial.available() > 0)
     if (gps.encode(gpsSerial.read()))
       displayInfo();
- 
       
       
   // If 5000 milliseconds pass and there are no characters coming in
@@ -207,6 +206,27 @@ switch (debug) {
 
 void displayInfo()
 {
+
+
+// read button and set state for the EEPROM "cleaner" 
+buttonState = digitalRead(buttonPin);
+if (buttonState == HIGH){
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+} else{
+
+//############################################################
+// is the EEPROM - button NOT pressed do everything as planned
+//############################################################
+
+Serial.println();
+Serial.println("EEPROM Status:");
+Serial.println(EEPROM.read(addgps1));
+Serial.println(EEPROM.read(addgps2));
+Serial.println(EEPROM.read(addgps3));
+Serial.println();
+  
   if (gps.location.isValid())
   {
     Serial.print("Latitude: ");
@@ -219,8 +239,6 @@ void displayInfo()
   else
   {
     Serial.println("Location: Not Available");
-
-    
     
   }
   
@@ -260,7 +278,7 @@ void displayInfo()
 
 eepromSetup();
 
-// Check the Values:
+// check the gps values:
 
   if ((UntereGrenzeLat_1 < gps.location.lat())&& (gps.location.lat()< ObereGrenzeLat_1)&&(UntereGrenzeLng_1 < gps.location.lng())&&(gps.location.lng() < ObereGrenzeLng_1)){
     
@@ -329,11 +347,10 @@ eepromSetup();
   digitalWrite(LockPin, HIGH);   //open the Lock
   }
 
-  
   Serial.println();
   Serial.println();
   delay(1000);
-  
+  } 
 }
 
 
@@ -365,5 +382,3 @@ void eepromSetup()
         pixels.show();
     }
 }
-
-
