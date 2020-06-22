@@ -34,20 +34,20 @@ bool gps2 = false;
 bool gps3 = false;
 
 //initial testing coordinates:
-float Latitude_1 = 52.489784;
-float Longitude_1 = 13.444000;
+float Latitude_1 = 52.XXXXXX;     //replace with your cordinates
+float Longitude_1 = 13.XXXXXX;
 float Latitude_2  = Latitude_1;
 float Longitude_2 = Longitude_1;
 float Latitude_3  = Latitude_1;
 float Longitude_3 = Longitude_1;
 
 //location coordinates:
-/*float Latitude_1  = 52.490830;
-float Longitude_1 = 13.445744;
-float Latitude_2  = 52.490093;
-float Longitude_2 = 13.442485;
-float Latitude_3  = 52.489395;
-float Longitude_3 = 13.443457;
+/*float Latitude_1  = 52.XXXXXX;    //replace with your cordinates
+float Longitude_1 = 13.XXXXXX;
+float Latitude_2  = 52.XXXXXX;
+float Longitude_2 = 13.XXXXXX;
+float Latitude_3  = 52.XXXXXX;
+float Longitude_3 = 13.XXXXXX;
 */
 
 // tolerance 
@@ -133,12 +133,13 @@ Serial.println("Coord 3 Langitude high:");
 Serial.println(ObereGrenzeLng_3,6);
 Serial.println();
 
-// EEPROM Read
-
+// EEPROM Read 
 eeprom_gps1 = EEPROM.read(addgps1);
 eeprom_gps2 = EEPROM.read(addgps2);
 eeprom_gps3 = EEPROM.read(addgps3);
 
+  
+// set pixels initial off  
 pixels.setPixelColor(0, pixels.Color(0, 0, 0));
 pixels.setPixelColor(1, pixels.Color(0, 0, 0));
 pixels.setPixelColor(2, pixels.Color(0, 0, 0));
@@ -207,7 +208,6 @@ switch (debug) {
 void displayInfo()
 {
 
-
 // read button and set state for the EEPROM "cleaner" 
 buttonState = digitalRead(buttonPin);
 if (buttonState == HIGH){
@@ -226,6 +226,7 @@ Serial.println(EEPROM.read(addgps1));
 Serial.println(EEPROM.read(addgps2));
 Serial.println(EEPROM.read(addgps3));
 Serial.println();
+  
   
   if (gps.location.isValid())
   {
@@ -260,26 +261,25 @@ Serial.println();
   if (gps.time.isValid())
   {
     if (gps.time.hour() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.hour());
-    Serial.print(":");
+      Serial.print(gps.time.hour());
+      Serial.print(":");
     if (gps.time.minute() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.minute());
-    Serial.print(":");
+      Serial.print(gps.time.minute());
+      Serial.print(":");
     if (gps.time.second() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.second());
-    Serial.print(".");
+      Serial.print(gps.time.second());
+      Serial.print(".");
     if (gps.time.centisecond() < 10) Serial.print(F("0"));
-    Serial.println(gps.time.centisecond());
+      Serial.println(gps.time.centisecond());
   }
   else
   {
     Serial.println("Not Available");
   }
 
-eepromSetup();
+eepromSetup();    // call the eepromSetup function -> as result set the former pixels as saved in the EEPROM.
 
-// check the gps values:
-
+// check if the actual gps-values are in the location windows:
   if ((UntereGrenzeLat_1 < gps.location.lat())&& (gps.location.lat()< ObereGrenzeLat_1)&&(UntereGrenzeLng_1 < gps.location.lng())&&(gps.location.lng() < ObereGrenzeLng_1)){
     
     gps1 = true;
@@ -308,7 +308,8 @@ eepromSetup();
   }
 
 
-// LED CONTROL...
+// led control for pixel 0 -> 2, e.g.: "if gps1 is true than set pixel 0 to red"
+//                                     "else set pixel 0 to off."  
 
   if (gps1 == true) {
     pixels.setPixelColor(0, pixels.Color(150, 0, 0));
@@ -341,12 +342,11 @@ eepromSetup();
   }
 
 
-//  UNLOCK THE LOCK....
+//  unlock the lock....
 
   if((gps1 == true) && (gps2 == true) && (gps3 == true)){
-  digitalWrite(LockPin, HIGH);   //open the Lock
+    digitalWrite(LockPin, HIGH);   //open the Lock
   }
-
   Serial.println();
   Serial.println();
   delay(1000);
@@ -354,10 +354,10 @@ eepromSetup();
 }
 
 
-
+//eepromSetup - function
 void eepromSetup()
 {
-    // Check the EEPROM values:
+    // check the EEPROM values:
 
     // if there is a EEPROM value equal true then  set the corresponding LED RGB to its color.
     if (eeprom_gps1 == 1) {
