@@ -34,7 +34,7 @@ bool gps2 = false;
 bool gps3 = false;
 
 //initial testing coordinates:
-float Latitude_1 = 52.XXXXXX;     //replace with your cordinates
+float Latitude_1 = 52.XXXXXX;
 float Longitude_1 = 13.XXXXXX;
 float Latitude_2  = Latitude_1;
 float Longitude_2 = Longitude_1;
@@ -42,7 +42,7 @@ float Latitude_3  = Latitude_1;
 float Longitude_3 = Longitude_1;
 
 //location coordinates:
-/*float Latitude_1  = 52.XXXXXX;    //replace with your cordinates
+/*float Latitude_1  = 52.XXXXXX;
 float Longitude_1 = 13.XXXXXX;
 float Latitude_2  = 52.XXXXXX;
 float Longitude_2 = 13.XXXXXX;
@@ -99,7 +99,6 @@ void setup()
 // Start the software serial port at the GPS's default baud
   gpsSerial.begin(GPSBaud);
 
-// initial info
 Serial.println("##########################################");
 Serial.println("Coord 1 Latitude low:");
 Serial.println(UntereGrenzeLat_1,6);
@@ -133,16 +132,16 @@ Serial.println("Coord 3 Langitude high:");
 Serial.println(ObereGrenzeLng_3,6);
 Serial.println();
 
-// EEPROM Read 
+// EEPROM Read
+
 eeprom_gps1 = EEPROM.read(addgps1);
 eeprom_gps2 = EEPROM.read(addgps2);
 eeprom_gps3 = EEPROM.read(addgps3);
 
-  
-// set pixels initial off  
 pixels.setPixelColor(0, pixels.Color(0, 0, 0));
 pixels.setPixelColor(1, pixels.Color(0, 0, 0));
 pixels.setPixelColor(2, pixels.Color(0, 0, 0));
+
 
 
 
@@ -154,6 +153,7 @@ pixels.setPixelColor(2, pixels.Color(0, 0, 0));
 
 void loop()
 {
+  
 // read button and set state for the EEPROM "cleaner" 
 buttonState = digitalRead(buttonPin);
 if (buttonState == HIGH){
@@ -162,28 +162,26 @@ if (buttonState == HIGH){
   debug = 2;
 }
 
-Serial.println();
-Serial.println("DEBUG:");
-Serial.println(debug);
-Serial.println();
-
-
 switch (debug) {
   case 1:
   
 // EEPROM 2 zero
-
   for (int i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
   }
   
     break;
+
+//############################################################
+// is the EEPROM - button NOT pressed do everything as planned
+//############################################################
+
   case 2:
  
   // This sketch displays information every time a new sentence is correctly encoded.
   while (gpsSerial.available() > 0)
     if (gps.encode(gpsSerial.read()))
-      displayInfo();
+      displayInfo();    // call displayInfo
       
       
   // If 5000 milliseconds pass and there are no characters coming in
