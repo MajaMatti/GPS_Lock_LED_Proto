@@ -1,8 +1,20 @@
+/*  
+  ____    ____    ____                     __                      __         
+ /\  _`\ /\  _`\ /\  _`\                  /\ \                    /\ \        
+ \ \ \L\_\ \ \L\ \ \,\L\_\                \ \ \        ___     ___\ \ \/'\    
+ \ \ \L_L\ \ ,__/\/_\__ \       _______   \ \ \  __  / __`\  /'___\ \ , <    
+  \ \ \/, \ \ \/   /\ \L\ \    /\______\   \ \ \L\ \/\ \L\ \/\ \__/\ \ \\`\  
+   \ \____/\ \_\   \ `\____\   \/______/    \ \____/\ \____/\ \____\\ \_\ \_\
+    \/___/  \/_/    \/_____/                 \/___/  \/___/  \/____/ \/_/\/_/
+
+*/
+   
 #include <EEPROM.h>
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
 
+// LED Pin and number of LEDs
 #define PIN       9 // 
 #define NUMPIXELS 3 // 
 
@@ -10,7 +22,9 @@
 int RXPin = 2; //TX auf dem Modul
 int TXPin = 3; //RX auf dem Modul
 
+// Baudrate for the serial Communication of the GPS-Module
 int GPSBaud = 9600;
+// Pin for the electromagnetic lock
 int LockPin = 8;
 
 // EEPROM addresses
@@ -50,7 +64,16 @@ float Latitude_3  = 52.XXXXXX;
 float Longitude_3 = 13.XXXXXX;
 */
 
-// tolerance 
+// tolerance window:
+// x-------x
+// |       |
+// |   o   |
+// |       |
+// x-------x
+// e.g.
+// upperlimitlat = Coord + tolLat
+// lowerlimitlat = Coord - tolLat
+
 float tolWindowLat = 0.0003;
 float tolWindowLng = 0.0004;
 
@@ -133,17 +156,14 @@ Serial.println(ObereGrenzeLng_3,6);
 Serial.println();
 
 // EEPROM Read
-
 eeprom_gps1 = EEPROM.read(addgps1);
 eeprom_gps2 = EEPROM.read(addgps2);
 eeprom_gps3 = EEPROM.read(addgps3);
 
+// all LEDs off
 pixels.setPixelColor(0, pixels.Color(0, 0, 0));
 pixels.setPixelColor(1, pixels.Color(0, 0, 0));
 pixels.setPixelColor(2, pixels.Color(0, 0, 0));
-
-
-
 
 }
 
