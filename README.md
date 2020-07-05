@@ -7,4 +7,5 @@ Arduino - Project working with a Nano v3 / NeoPixel 5V LED stripe with 3 LEDs / 
 In the actual version the Project got a toggle button on PIN4 of the Nano to "reset" the EEPROM.
 If not pressed, the Nano saves the location - matches when powered off and loads them back if powered on again. (Until the button is pressed and the Memory ist reset)
 
-![git](https://user-images.githubusercontent.com/30718441/86538014-95561b00-bef3-11ea-9dd2-aa9763d405b3.PNG)
+![git](https://user-images.githubusercontent.com/30718441/86538333-b7509d00-bef5-11ea-8610-ebcd58db8f13.PNG)
+
